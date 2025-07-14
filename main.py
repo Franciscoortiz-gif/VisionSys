@@ -2,20 +2,21 @@ import numpy as np
 import cv2 as cv
 import removeblue
 
-filename = ['bottle1.jpeg','bottle2.jpeg','bottle3.jpeg','bottle4.jpeg']
+filename = ['images/bottle1.jpeg','images/bottle2.jpeg','images/bottle3.jpeg','images/bottle4.jpeg','images/IMG_3677.JPG','images/IMG_3680.JPG','images/IMG_3682.JPG' ,'images/IMG_3683.JPG', 'images/IMG_3684.JPG','images/IMG_3683.JPG','images/IMG_3683.JPG', 'images/IMG_3684.JPG','images/IMG_3684.JPG','images/IMG_3683.JPG', 'images/IMG_3684.JPG','images/IMG_3685.JPG','images/IMG_3683.JPG', 'images/IMG_3684.JPG','images/IMG_3686.JPG']
 
 for x in filename:
     image = cv.imread(x)
+    image = cv.resize(image, (960, 540)) 
+    result, imag= removeblue.remove_blue(image) 
+    
+    cv.imshow('resuldo', result)
+    cv.imshow('original', imag)
+    cv.waitKey(0)
+    cv.destroyAllWindows()
+    """  
     img = image.copy()
     kernel = [ [0, -1, 0], [-1, 5, -1], [0, -1, 0] ] #Para ignorar brillos y el plastico
     kernel2 = [ [-3, 12, -3], [-5, 16, -5], [0, 3, 0] ] #Kernel para deteccion de huecos
-    lowerbriggness =  np.array([190,190,190])
-    upperbrigness =  np.array([255,255,255])
-
-
-    hsv1 = cv.cvtColor(img, cv.COLOR_BGR2HSV)
-    darkness = cv.inRange(hsv1, lowerbriggness, upperbrigness)
-    unbrig = cv.bitwise_and(img, img,mask=darkness)
 
 
     kernel = np.array(kernel)
@@ -27,11 +28,11 @@ for x in filename:
 
     
     #Deteccion de huecos
-    """    res= cv.cvtColor(image, cv.COLOR_BGR2GRAY)
+      res= cv.cvtColor(image, cv.COLOR_BGR2GRAY)
     cv.imshow('grayscale',res)
     cv.waitKey(0)
     cv.destroyAllWindows()
-    """    
+     
 
     filter2 = cv.filter2D(thresh, -1, kernel2)
     _, th = cv.threshold(filter2, 127, 135, cv.THRESH_BINARY)
@@ -40,8 +41,8 @@ for x in filename:
     applymask = cv.bitwise_and(th,th,mask=mask)
 
     cv.imshow('original image', image)
+
     cv.imshow('thresh', th)
     cv.imshow('white filter', applymask)
-    cv.imshow('sin brillo', unbrig)
-    cv.waitKey(0)
-    cv.destroyAllWindows()
+     """  
+    
