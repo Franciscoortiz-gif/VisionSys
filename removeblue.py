@@ -3,9 +3,6 @@ import numpy as np
 import sys
 
 def remove_blue(imag):
-        """
-        
-        """
         if imag is None:
                 print("image not found")
                 sys.exit()
@@ -24,18 +21,23 @@ def remove_blue(imag):
                 efe = cv2.blur(contornos,(3,3))
                 edges = cv2.Canny(efe,170,255)
                 cont2, hera2 = cv2.findContours(edges, cv2.RETR_TREE, cv2.CHAIN_APPROX_TC89_KCOS)
-                contornos2 = cv2.drawContours(conts2, cont2, -1, (0, 255, 0), 3)
+                contornos2 = cv2.drawContours(conts2, cont2, -1, (0, 255, 0), 1)
                 min_contour_area = 1000  # Define your minimum area threshold
                 large_contours = [cnt for cnt in cont2 if cv2.contourArea(cnt) > min_contour_area and cv2.contourArea(cnt) < 8000]
                 for cnt in large_contours:
                         x, y, w, h = cv2.boundingRect(cnt)
                         frame_out = cv2.rectangle(fra, (x, y), (x+w, y+h), (0, 0, 200), 3)
 
-                return thresh, frame_out     
+                return frame_out  
         
         
-              
-                 #      
         
- 
-        return 
+def detectTapes(image):
+        if image is not None:
+                img = image.copy()
+                blur = cv2.blur(img, (3,3))
+                gray = cv2.cvtColor(blur, cv2.COLOR_BGR2GRAY)
+                ret, th = cv2.threshold(gray,120, 255, cv2.THRESH_BINARY_INV)
+                
+                
+                return th 
