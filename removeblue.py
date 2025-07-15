@@ -14,7 +14,7 @@ def remove_blue(imag):
                 conts2 = imag.copy()
                 fra = imag.copy()
                 frame_out = imag.copy()
-                exte = imag.copy()
+                #exte = imag.copy()
                 blurred = cv2.GaussianBlur(image, (11, 11), 0)
                 gray = cv2.cvtColor(blurred, cv2.COLOR_BGR2GRAY)
                 
@@ -27,8 +27,8 @@ def remove_blue(imag):
                         for i in np.arange(0, 256)]).astype("uint8")
                 # apply gamma correction using the lookup table
                 gammacor = cv2.LUT(thresh, table)
-                kernel = np.ones((29, 29), np.uint8) 
-                closing = cv2.morphologyEx(gammacor, cv2.MORPH_OPEN, kernel)
+                kernel = np.ones((5, 5), np.uint8) 
+                closing = cv2.morphologyEx(gammacor, cv2.MORPH_OPEN, kernel, iterations=5)
                 ret2, th2 = cv2.threshold(closing, 153.7, 255, cv2.THRESH_TOZERO + cv2.THRESH_BINARY)
                 cont, hera = cv2.findContours(th2, cv2.RETR_TREE, cv2.CHAIN_APPROX_TC89_KCOS)
                 contornos = cv2.drawContours(conts, cont, -1, (0, 255, 0), 3)
@@ -40,7 +40,7 @@ def remove_blue(imag):
                 large_contours = [cnt for cnt in cont2 if cv2.contourArea(cnt) > min_contour_area and cv2.contourArea(cnt) < 8000]
                 for cnt in large_contours:
                         x, y, w, h = cv2.boundingRect(cnt)
-                        frame_out = cv2.rectangle(fra, (x, y), (x+w, y+h), (0, 0, 200), 3)
+                        frame_out = cv2.rectangle(fra, (x, y), (x+w, y+h), (0, 115, 200), 3)
 
                 return frame_out
         
