@@ -75,7 +75,10 @@ def detectTapes(image):
                 x, y, w, h = cv2.boundingRect(cnt)
                 frame_out = cv2.rectangle(frame, (x, y), (x+w, y+h), (0, 0, 200), 3)
                 i = len(large_contours)
-        return frame_out,i
+        
+        frame_out = cv2.putText(frame_out, "Botellas encontradas "+str(i), (50,50), cv2.FONT_HERSHEY_SIMPLEX, 1.5, (0,255,0),2)
+        
+        return frame_out
 
 
     

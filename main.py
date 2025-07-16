@@ -11,7 +11,7 @@ for x in filename:
     #DETECCION DE HUECOS
     result= removeblue.remove_blue(image) 
     #Deteccion de cuantos galones hay
-    tapes, i = removeblue.detectTapes(image)
+    tapes = removeblue.detectTapes(image)
     
     dist = distances.distancemask(image)
     
@@ -20,10 +20,9 @@ for x in filename:
     else:
         tapas = image
     
-    bote = str(i)
     
     cv.imshow('resuldo', result)
-    cv.imshow('tapas'+' Botellas encontradas' + bote, tapas)
+    cv.imshow('tapas'+' Botellas encontradas', tapas)
     cv.imshow('Distancia', dist)
     cv.waitKey(0)
     cv.destroyAllWindows()
