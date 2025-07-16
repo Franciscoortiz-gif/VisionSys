@@ -4,7 +4,7 @@ import removeblue
 import distances
 import sys
 
-filename = ['images/IMG_3677.JPG','images/IMG_3680.JPG','images/IMG_3682.JPG' ,'images/IMG_3683.JPG', 'images/IMG_3684.JPG','images/IMG_3683.JPG','images/IMG_3683.JPG', 'images/IMG_3684.JPG','images/IMG_3684.JPG','images/IMG_3683.JPG', 'images/IMG_3684.JPG','images/IMG_3685.JPG','images/IMG_3683.JPG', 'images/IMG_3684.JPG','images/IMG_3686.JPG']
+filename = ['images/IMG_3677.JPG','images/IMG_3680.JPG','images/IMG_3682.JPG' ,'images/IMG_3683.JPG', 'images/IMG_3684.JPG','images/IMG_3681.JPG','images/IMG_3685.JPG','images/IMG_3686.JPG']
 
 for x in filename:
     image = cv.imread(x)
@@ -17,7 +17,7 @@ for x in filename:
         #Deteccion de cuantos galones hay
         tapes, masktapes = removeblue.detectTapes(dist)
         
-        structered = distances.isdestructured(masktapes, image)
+        structered = distances.isdestructured(masktapes, dist)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             
         if tapes is not None:
             tapas = tapes
         else:
@@ -26,8 +26,7 @@ for x in filename:
         
         cv.imshow('resuldo', result)
         cv.imshow('tapas'+' Botellas encontradas', tapas)
-        cv.imshow('Distancia', dist)
-        cv.imshow('Mask tapes', masktapes)
+        cv.imshow('Is Structured', structered)
         cv.waitKey(0)
         cv.destroyAllWindows()
     else:
