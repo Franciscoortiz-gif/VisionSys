@@ -46,8 +46,8 @@ def isdestructured(mask, image):
         cv2.line(img2,(int(pos[2]),int(pos[3])),(int(pos[4]), int(pos[5])),(26, 52, 255),5)
         distance = np.sqrt((pos[2] - pos[4])**2 + (pos[3] - pos[5])**2)
         distance2 = np.sqrt((pos[6] - pos[0])**2 + (pos[7] - pos[1])**2)
-        dismm = (distance * w) / 305
-        dismm2 = (distance2 * w) / 305
+        dismm = (distance * 305) / wi
+        dismm2 = (distance2 * 305) / wi
         cv2.putText(img2, str(dismm2)[:3]+ "mm", (int(pos[4]), int(pos[5])), cv2.FONT_HERSHEY_SIMPLEX, 1, (255,255,255), 2, cv2.LINE_AA)
         cv2.putText(img2, str(dismm)[:3] + "mm", (int(pos[6]), int(pos[7])), cv2.FONT_HERSHEY_SIMPLEX, 1, (255,255,255), 2, cv2.LINE_AA)
         tole = 3
@@ -64,7 +64,4 @@ def isdestructured(mask, image):
         else:
             cv2.putText(img2, "Estructurado", (50,50), cv2.FONT_HERSHEY_SIMPLEX, 1, (192,255,199), 2,cv2.LINE_AA)
 
-            
-
-    
     return img2

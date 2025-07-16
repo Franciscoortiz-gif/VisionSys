@@ -2,6 +2,7 @@ import numpy as np
 import cv2 as cv
 import removeblue
 import distances
+import failseal
 import sys
 
 filename = ['images/IMG_3677.JPG','images/IMG_3680.JPG','images/IMG_3682.JPG' ,'images/IMG_3683.JPG', 'images/IMG_3684.JPG','images/IMG_3681.JPG','images/IMG_3685.JPG','images/IMG_3686.JPG']
@@ -17,7 +18,8 @@ for x in filename:
         #Deteccion de cuantos galones hay
         tapes, masktapes = removeblue.detectTapes(dist)
         
-        structered = distances.isdestructured(masktapes, dist)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             
+        structered = distances.isdestructured(masktapes, dist) 
+        failsea = failseal.seilfailed('images/bottle2.png')                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
         if tapes is not None:
             tapas = tapes
         else:
@@ -27,6 +29,7 @@ for x in filename:
         cv.imshow('resuldo', result)
         cv.imshow('tapas'+' Botellas encontradas', tapas)
         cv.imshow('Is Structured', structered)
+        cv.imshow('Is Fail Seal', failsea)
         cv.waitKey(0)
         cv.destroyAllWindows()
     else:
