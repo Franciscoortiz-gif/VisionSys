@@ -21,26 +21,22 @@ def remove_blue(imag):
 
                 ret, thresh = cv2.threshold(gray, 0, 255, cv2.THRESH_TOZERO + cv2.THRESH_OTSU + cv2.THRESH_BINARY)
                 
-                gamma = 2.56
+                gamma = 2.76
                 invGamma = 1.0 / gamma
                 table = np.array([((i / 255.0) ** invGamma) * 255
                         for i in np.arange(0, 256)]).astype("uint8")
                 # apply gamma correction using the lookup table
                 gammacor = cv2.LUT(thresh, table)
                 kernel = np.ones((5, 5), np.uint8) 
-                closing = cv2.morphologyEx(gammacor, cv2.MORPH_OPEN, kernel, iterations=5)
+                closing = cv2.morphologyEx(gammacor, cv2.MORPH_OPEN, kernel, iterations=5)    
                 ret2, th2 = cv2.threshold(closing, 153.7, 255, cv2.THRESH_TOZERO + cv2.THRESH_BINARY)
                 cont, hera = cv2.findContours(th2, cv2.RETR_TREE, cv2.CHAIN_APPROX_TC89_KCOS)
-                contornos = cv2.drawContours(conts, cont, -1, (0, 255, 0), 3)
-                efe = cv2.blur(contornos,(3,3))
-                edges = cv2.Canny(efe,170,255)
-                cont2, hera2 = cv2.findContours(edges, cv2.RETR_TREE, cv2.CHAIN_APPROX_TC89_KCOS)
-                contornos2 = cv2.drawContours(conts2, cont2, -1, (0, 255, 0), 1)
-                min_contour_area = 1000  # Define your minimum area threshold
-                large_contours = [cnt for cnt in cont2 if cv2.contourArea(cnt) > min_contour_area and cv2.contourArea(cnt) < 8000]
+                con = cv2.drawContours(conts2, cont, -1, (255,0,255), 3)
+                min_contour_area = 500  # Define your minimum area threshold
+                large_contours = [cnt for cnt in cont if cv2.contourArea(cnt) > min_contour_area and cv2.contourArea(cnt) < 18000]
                 for cnt in large_contours:
                         x, y, w, h = cv2.boundingRect(cnt)
-                        frame_out = cv2.rectangle(fra, (x, y), (x+w, y+h), (0, 115, 200), 3)
+                        frame_out = cv2.rectangle(fra, (x, y), (x+w, y+h), (60, 115, 200), 3)
 
                 return frame_out
         
@@ -78,7 +74,7 @@ def detectTapes(image):
         
         frame_out = cv2.putText(frame_out, "Botellas encontradas "+str(i), (50,50), cv2.FONT_HERSHEY_SIMPLEX, 1.5, (0,255,0),2)
         
-        return frame_out
+        return frame_out, closing
 
 
     
