@@ -32,6 +32,6 @@ def autoadjustbrigandconst(image):
     y, u,v =cv2.split(yuvimg)
     chanels = [y,u,v]
     his = cv2.equalizeHist(chanels[0],chanels[0])
-    fin = cv2.merge(chanels[0], contrasted)
+    fin = cv2.merge(chanels, contrasted)
 
-    return fin
+    return new_img

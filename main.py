@@ -10,10 +10,11 @@ import sys
 filename = ['images/IMG_3677.JPG','images/IMG_3680.JPG','images/IMG_3682.JPG' ,'images/IMG_3683.JPG', 'images/IMG_3684.JPG','images/IMG_3681.JPG','images/IMG_3685.JPG','images/IMG_3686.JPG']
 
 for x in filename:
+    
     image = cv.imread(x)
     image = cv.resize(image, (960, 540)) 
     if image is not None:
-        adjustimage = autoadjust.autoadjustbrigandconst(image)
+        #adjustimage = autoadjust.autoadjustbrigandconst(image)
         #Imagen recortada a solo lo que me importa
         dist = distances.distancemask(image)
         #DETECCION DE HUECOS
@@ -33,7 +34,7 @@ for x in filename:
         cv.imshow('tapas'+' Botellas encontradas', tapas)
         cv.imshow('Is Structured', structered)
         #cv.imshow('Is Fail Seal', failsea)
-        cv.imshow('Adjust', adjustimage)
+        #cv.imshow('Adjust', adjustimage)
         cv.waitKey(0)
         cv.destroyAllWindows()
     else:
