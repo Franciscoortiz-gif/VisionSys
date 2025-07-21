@@ -14,11 +14,11 @@ for x in filename:
     image = cv.imread(x)
     image = cv.resize(image, (960, 540)) 
     if image is not None:
-        #adjustimage = autoadjust.autoadjustbrigandconst(image)
+        adj = autoadjust.autoadjustbrigandconst(image)
         #Imagen recortada a solo lo que me importa
-        dist = distances.distancemask(image)
+        dist,di = distances.distancemask(adj)
         #DETECCION DE HUECOS
-        result= removeblue.remove_blue(dist) 
+        result, th = removeblue.remove_blue(dist) 
         #Deteccion de cuantos galones hay
         tapes, masktapes = removeblue.detectTapes(dist)
         
@@ -33,8 +33,8 @@ for x in filename:
         cv.imshow('resuldo', result)
         cv.imshow('tapas'+' Botellas encontradas', tapas)
         cv.imshow('Is Structured', structered)
+        cv.imshow('hueco', th)
         #cv.imshow('Is Fail Seal', failsea)
-        #cv.imshow('Adjust', adjustimage)
         cv.waitKey(0)
         cv.destroyAllWindows()
     else:

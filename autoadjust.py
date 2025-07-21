@@ -3,10 +3,10 @@ import numpy as np
 
 def autoadjustbrigandconst(image):
     img = image.copy()
-    amax = 160
+    img3 = image.copy()
+    amax = 200
     amin = 0
-
-
+    kernel = np.ones((5,5), np.uint8)
     
     alow = img.min()
     ahigh = img.max()
@@ -15,23 +15,13 @@ def autoadjustbrigandconst(image):
     beta = amin - alow * alpha
     # perform the operation g(x,y)= α * f(x,y)+ β
     new_img = cv2.convertScaleAbs(img, alpha=alpha, beta=beta)
-    img2 = cv2.cvtColor(new_img, cv2.COLOR_BGR2YCrCb)
-    y_channel, cr_channel, cb_channel = cv2.split(img2)
     
-    # Perform contrast stretch on the Y channel
-    y_channel_stretched = cv2.normalize(y_channel, None, 0, 160, cv2.NORM_MINMAX)
-    
-    # Merge the stretched Y channel back with Cr and Cb channels
-    contrast_stretched_ycrcb = cv2.merge([y_channel_stretched, cr_channel, cb_channel])
-    
-    # Convert the image back from YCrCb to BGR color space
-    contrasted = cv2.cvtColor(contrast_stretched_ycrcb, cv2.COLOR_YCrCb2BGR)
-    
-    imgc = contrasted.copy()
-    yuvimg = cv2.cvtColor(imgc, cv2.COLOR_BGR2YUV)
-    y, u,v =cv2.split(yuvimg)
-    chanels = [y,u,v]
-    his = cv2.equalizeHist(chanels[0],chanels[0])
-    fin = cv2.merge(chanels, contrasted)
-
-    return new_img
+    yb = cv2.cvtColor(new_img, cv2.COLOR_BGR2YCrCb)
+    y,Cr,Cb = cv2.split(yb)
+    ysrt = cv2.normalize(y,None,0,185,cv2.NORM_MINMAX)
+    imyc = cv2.merge([ysrt,Cr,Cb])
+    im1 = cv2.cvtColor(imyc, cv2.COLOR_YCrCb2BGR)
+    gr = cv2.cvtColor(im1, cv2.COLOR_BGR2GRAY)
+    equa = cv2.equalizeHist(gr)
+    imgfin = cv2.cvtColor(equa, cv2.COLOR_GRAY2BGR)
+    return imgfin

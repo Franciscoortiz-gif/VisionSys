@@ -14,23 +14,24 @@ def remove_blue(imag):
                 conts2 = imag.copy()
                 fra = imag.copy()
                 frame_out = imag.copy()
+                """ gamma = 1.5
                 #exte = imag.copy()
-                blurred = cv2.GaussianBlur(image, (11, 11), 0)
-                gray = cv2.cvtColor(blurred, cv2.COLOR_BGR2GRAY)
-                
-
-                ret, thresh = cv2.threshold(gray, 0, 255, cv2.THRESH_TOZERO + cv2.THRESH_OTSU + cv2.THRESH_BINARY)
-                
-                gamma = 2.76
                 invGamma = 1.0 / gamma
-                table = np.array([((i / 255.0) ** invGamma) * 255
-                        for i in np.arange(0, 256)]).astype("uint8")
-                # apply gamma correction using the lookup table
-                gammacor = cv2.LUT(thresh, table)
+                table = np.array([((i / 255.0) ** invGamma) * 255 for i in np.arange(0, 256)]).astype("uint8")
+
+                # Apply the lookup table to the image
+                im2 = cv2.LUT(image, table)
+                blurred = cv2.GaussianBlur(im2, (3, 3), 0)
+                gray = cv2.cvtColor(blurred, cv2.COLOR_BGR2GRAY)
+                ret, thresh = cv2.threshold(gray, 120, 255, cv2.THRESH_TOZERO + cv2.THRESH_BINARY)
+        
+                
                 kernel = np.ones((5, 5), np.uint8) 
-                closing = cv2.morphologyEx(gammacor, cv2.MORPH_OPEN, kernel, iterations=5)    
-                ret2, th2 = cv2.threshold(closing, 153.7, 255, cv2.THRESH_TOZERO + cv2.THRESH_BINARY)
-                cont, hera = cv2.findContours(th2, cv2.RETR_TREE, cv2.CHAIN_APPROX_TC89_KCOS)
+                closing = cv2.morphologyEx(thresh, cv2.MORPH_OPEN, kernel, iterations=5)    
+                ret2, th2 = cv2.threshold(closing, 159.8, 255,cv2.THRESH_BINARY)"""
+                bl = cv2.blur(image, (3,3))
+                edges = cv2.Canny(bl, 120, 255)
+                cont, hera = cv2.findContours(edges, cv2.RETR_TREE, cv2.CHAIN_APPROX_TC89_KCOS)
                 con = cv2.drawContours(conts2, cont, -1, (255,0,255), 3)
                 min_contour_area = 500  # Define your minimum area threshold
                 large_contours = [cnt for cnt in cont if cv2.contourArea(cnt) > min_contour_area and cv2.contourArea(cnt) < 18000]
@@ -38,7 +39,7 @@ def remove_blue(imag):
                         x, y, w, h = cv2.boundingRect(cnt)
                         frame_out = cv2.rectangle(fra, (x, y), (x+w, y+h), (60, 115, 200), 3)
 
-                return frame_out
+                return frame_out, edges
         
                 #ret, th = cv2.threshold(gray,110, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU )
 
