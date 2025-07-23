@@ -1,5 +1,6 @@
 import numpy as np
 import cv2 as cv
+import matplotlib.pyplot as mp
 import removeblue
 import distances
 import failseal
@@ -31,9 +32,10 @@ for x in filename:
         
         
         cv.imshow('resuldo', result)
+        cv.imshow("huecos", th)
         cv.imshow('tapas'+' Botellas encontradas', tapas)
         cv.imshow('Is Structured', structered)
-        cv.imshow('hueco', th)
+        
         #cv.imshow('Is Fail Seal', failsea)
         cv.waitKey(0)
         cv.destroyAllWindows()

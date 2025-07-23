@@ -3,10 +3,8 @@ import numpy as np
 
 def autoadjustbrigandconst(image):
     img = image.copy()
-    img3 = image.copy()
-    amax = 200
+    amax = 180
     amin = 0
-    kernel = np.ones((5,5), np.uint8)
     
     alow = img.min()
     ahigh = img.max()
@@ -22,6 +20,8 @@ def autoadjustbrigandconst(image):
     imyc = cv2.merge([ysrt,Cr,Cb])
     im1 = cv2.cvtColor(imyc, cv2.COLOR_YCrCb2BGR)
     gr = cv2.cvtColor(im1, cv2.COLOR_BGR2GRAY)
-    equa = cv2.equalizeHist(gr)
-    imgfin = cv2.cvtColor(equa, cv2.COLOR_GRAY2BGR)
+    gr= cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    #equa = cv2.equalizeHist(gr)
+    #norm = cv2.normalize(equa, None, 135, 195, cv2.NORM_MINMAX)
+    imgfin = cv2.cvtColor(gr, cv2.COLOR_GRAY2BGR)
     return imgfin
