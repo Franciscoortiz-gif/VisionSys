@@ -6,17 +6,21 @@ def distancemask(image):
     cropped_img = image.copy()
     img = image.copy()
     img3 = image.copy() 
-    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    ret, th = cv2.threshold(gray, 55, 255, cv2.THRESH_OTSU)
-    cont1, hera1 = cv2.findContours(th, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    low = np.array([174,174,174])
+    upp = np.array([255,255,255])
     
-    for i in range(0,len(cont1)):
-        area=cv2.contourArea(cont1[i])
-        if( area>20000):
-            x,y,w,h= cv2.boundingRect(cont1[i])
-            cropped_img=img3[y:y+h, x:x+w]
+    cro= img[61:534, 181:830]
+    gray = cv2.cvtColor(cro, cv2.COLOR_BGR2GRAY)
+    his = cv2.equalizeHist(gray)
+    bg = cv2.cvtColor(his, cv2.COLOR_GRAY2BGR)
+    im1 = cv2.inRange(bg, low,upp)
+    i = im1 * 0.12
+    i = np.clip(i, 0, 255).astype(np.uint8)
+    i = cv2.blur(i, (12,12))
+    icolor = cv2.cvtColor(i, cv2.COLOR_GRAY2BGR)
+    imf = cv2.subtract(cro, icolor)
                   
-    return cropped_img, th
+    return imf
 
 def isdestructured(mask, image):
     img = image.copy()

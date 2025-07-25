@@ -1,6 +1,8 @@
 import cv2
 import numpy as np
 
+fina = None
+
 def autoadjustbrigandconst(image):
     img = image.copy()
     amax = 180
@@ -16,12 +18,9 @@ def autoadjustbrigandconst(image):
     
     yb = cv2.cvtColor(new_img, cv2.COLOR_BGR2YCrCb)
     y,Cr,Cb = cv2.split(yb)
-    ysrt = cv2.normalize(y,None,0,185,cv2.NORM_MINMAX)
+    ysrt = cv2.normalize(y,None,0,160,cv2.NORM_MINMAX)
     imyc = cv2.merge([ysrt,Cr,Cb])
     im1 = cv2.cvtColor(imyc, cv2.COLOR_YCrCb2BGR)
-    gr = cv2.cvtColor(im1, cv2.COLOR_BGR2GRAY)
-    gr= cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    #equa = cv2.equalizeHist(gr)
-    #norm = cv2.normalize(equa, None, 135, 195, cv2.NORM_MINMAX)
-    imgfin = cv2.cvtColor(gr, cv2.COLOR_GRAY2BGR)
-    return imgfin
+    fina = im1.copy
+    return im1
+

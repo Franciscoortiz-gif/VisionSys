@@ -1,49 +1,57 @@
 import numpy as np
-import cv2 as cv
-import matplotlib.pyplot as mp
+import cv2
 import removeblue
 import distances
 import failseal
-import autoadjust
+import autoadjust as au
 #import RPi.GPIO as GPIO
 import sys
+from tkinter import *
+from PIL import ImageTk, Image
 
-filename = ['images/IMG_3677.JPG','images/IMG_3680.JPG','images/IMG_3682.JPG' ,'images/IMG_3683.JPG', 'images/IMG_3684.JPG','images/IMG_3681.JPG','images/IMG_3685.JPG','images/IMG_3686.JPG']
 
-for x in filename:
+def start():
+    global cap
+    cap = cv2.VideoCapture(0)
+    show()
     
-    image = cv.imread(x)
-    image = cv.resize(image, (960, 540)) 
-    if image is not None:
-        adj = autoadjust.autoadjustbrigandconst(image)
-        #Imagen recortada a solo lo que me importa
-        dist,di = distances.distancemask(adj)
-        #DETECCION DE HUECOS
-        result, th = removeblue.remove_blue(dist) 
-        #Deteccion de cuantos galones hay
-        tapes, masktapes = removeblue.detectTapes(dist)
-        
-        structered = distances.isdestructured(masktapes, dist) 
-        failsea = failseal.seilfailed('images/bottle2.png', dist)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
-        if tapes is not None:
-            tapas = tapes
+def show():
+    global cap
+    if cap is not None:
+        ret, frame = cap.read()
+        if ret == True:
+            frame = cv2.resize(frame, (960,540))
+            adj = au.autoadjustbrigandconst(frame)
+            i = distances.distancemask(adj)
+            im = Image.fromarray(i)
+            img = ImageTk.PhotoImage(image=im)
+            vid.configure(image=img)
+            vid.image = img
+            vid.after(10, show)
+            print("termino")
         else:
-            tapas = image
-        
-        
-        cv.imshow('resuldo', result)
-        cv.imshow("huecos", th)
-        cv.imshow('tapas'+' Botellas encontradas', tapas)
-        cv.imshow('Is Structured', structered)
-        
-        #cv.imshow('Is Fail Seal', failsea)
-        cv.waitKey(0)
-        cv.destroyAllWindows()
-    else:
-        print("No se encontro ninguna imagen")
-        sys.exit()
+            vid.image = ""
+            cap.release() 
+            print("fallo")
+            
+
+def end():
+    global cap
+    cap.release()
     
-    
-    
-   
-    
+cap = None
+root = Tk()
+
+btnIniciar = Button(root, text="Iniciar", width=45, command=start)
+btnIniciar.grid(column=0, row=0, padx=5, pady=5)
+
+btnFinalizar = Button(root, text="Finalizar", width=45, command=end)
+btnFinalizar.grid(column=1, row=0, padx=5, pady=5)
+
+vid = Label(root)
+vid.grid(column=0, row=1, columnspan=2)
+
+
+if __name__ == "__main__":
+    start()
+    root.mainloop()

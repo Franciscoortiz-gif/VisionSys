@@ -2,6 +2,12 @@ import cv2
 import numpy as np
 import mvsdk
 import platform
+import removeblue
+import distances
+import failseal
+import autoadjust
+#import RPi.GPIO as GPIO
+import sys
 
 
 def main_loop():
@@ -83,8 +89,23 @@ def main_loop():
 			frame = np.frombuffer(frame_data, dtype=np.uint8)
 			frame = frame.reshape((FrameHead.iHeight, FrameHead.iWidth, 1 if FrameHead.uiMediaType == mvsdk.CAMERA_MEDIA_TYPE_MONO8 else 3) )
 
-			frame = cv2.resize(frame, (640,480), interpolation = cv2.INTER_LINEAR)
-			cv2.imshow("Press q to end", frame)
+			frame = cv2.resize(frame, (960,540), interpolation = cv2.INTER_LINEAR)
+			if frame is not None:
+				adj = autoadjust.autoadjustbrigandconst(frame)
+				#Imagen recortada a solo lo que me importa
+				dist, p = distances.distancemask(adj)
+				#DETECCION DE HUECOS
+				result= removeblue.remove_blue(dist) 
+				#Deteccion de cuantos galones hay
+				tapes, masktapes = removeblue.detectTapes(dist)
+				
+				#structered = distances.isdestructured(masktapes, dist) 
+				failsea = failseal.seilfailed('images/bottle2.png', dist)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
+				if tapes is not None:
+					tapas = tapes
+				else:
+					tapas = frame
+
 			
 		except mvsdk.CameraException as e:
 			if e.error_code != mvsdk.CAMERA_STATUS_TIME_OUT:
