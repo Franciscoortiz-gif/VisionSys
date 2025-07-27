@@ -4,26 +4,26 @@ import sys
 
 
 
-def remove_blue(imag):
+def remove_blue(imag, thvalue, normval, itera,kerne, areamin, areamax):
         if imag is None:
                 print("image not found")
                 sys.exit()
         else:
                 ima = imag.copy()
                 frame_out = imag.copy()
-                kernel = np.ones((5, 5), np.uint8) 
+                kernel = np.ones((kerne, kerne), np.uint8) 
                 grw = cv2.cvtColor(ima, cv2.COLOR_BGR2GRAY)
-                norm = cv2.normalize(grw, None, 0,160, cv2.NORM_MINMAX)
-                _,mm1 = cv2.threshold(norm, 120,255,cv2.THRESH_BINARY)
-                ero = cv2.erode(mm1, kernel,iterations=3)
+                norm = cv2.normalize(grw, None, 0,normval, cv2.NORM_MINMAX)
+                _,mm1 = cv2.threshold(norm, thvalue,255,cv2.THRESH_BINARY)
+                ero = cv2.erode(mm1, kernel,iterations=itera)
                 con, _ = cv2.findContours(ero, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-                #draw = cv2.drawContours(ima, con, -1,(0,0,255),3)
-                large_contours = [cnt for cnt in con if cv2.contourArea(cnt) > 800 and cv2.contourArea(cnt) < 20000 ]
+                draw = cv2.drawContours(ima, con, -1,(0,0,255),3)
+                large_contours = [cnt for cnt in con if cv2.contourArea(cnt) > areamin and cv2.contourArea(cnt) < areamax ]
                 for cnt in large_contours:
                         x, y, w, h = cv2.boundingRect(cnt)
                         frame_out = cv2.rectangle(ima, (x, y), (x+w, y+h), (0, 0, 200), 3)
   
-                return frame_out
+                return frame_out, mm1, norm, ero, draw
                 
         
 def detectTapes(image):
@@ -60,19 +60,6 @@ def detectTapes(image):
                 x, y, w, h = cv2.boundingRect(cnt)
                 frame_out = cv2.rectangle(frame, (x, y), (x+w, y+h), (0, 0, 200), 3)
                 i = len(large_contours)
-        """kernel = np.ones((3, 3), np.uint8)
-
-        img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-        hist = cv2.equalizeHist(img)
-        bl = cv2.GaussianBlur(hist,(31,31), cv2.BORDER_DEFAULT)
-        
-        cir = cv2.HoughCircles(th,cv2.HOUGH_GRADIENT,1,bl.shape[0]/64, param1=15, param2=25,minRadius=50, maxRadius=60)
-        
-        if cir is not None:
-                circu = np.around(cir[0,:]).astype("int")
-                for (x,y,r) in circu:
-                    frame_out = cv2.circle(image, (x,y), r, (0, 255, 0), 2)
-                    i = len(circu)"""
         
         frame_out = cv2.putText(frame_out, "Botellas encontradas "+str(i), (50,50), cv2.FONT_HERSHEY_SIMPLEX, 1.5, (0,255,0),2)
         

@@ -21,6 +21,5 @@ def autoadjustbrigandconst(image):
     ysrt = cv2.normalize(y,None,0,160,cv2.NORM_MINMAX)
     imyc = cv2.merge([ysrt,Cr,Cb])
     im1 = cv2.cvtColor(imyc, cv2.COLOR_YCrCb2BGR)
-    fina = im1.copy
     return im1
 

@@ -91,20 +91,7 @@ def main_loop():
 
 			frame = cv2.resize(frame, (960,540), interpolation = cv2.INTER_LINEAR)
 			if frame is not None:
-				adj = autoadjust.autoadjustbrigandconst(frame)
-				#Imagen recortada a solo lo que me importa
-				dist, p = distances.distancemask(adj)
-				#DETECCION DE HUECOS
-				result= removeblue.remove_blue(dist) 
-				#Deteccion de cuantos galones hay
-				tapes, masktapes = removeblue.detectTapes(dist)
-				
-				#structered = distances.isdestructured(masktapes, dist) 
-				failsea = failseal.seilfailed('images/bottle2.png', dist)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
-				if tapes is not None:
-					tapas = tapes
-				else:
-					tapas = frame
+				cv2.imshow("camara",frame)
 
 			
 		except mvsdk.CameraException as e:
