@@ -8,9 +8,9 @@ def distancemask(image, limi, porce, porbl,rymin, rymax, rxmin, rxmax):
     upp = np.array([255,255,255])
     
     cro= img[rymin:rymax, rxmin:rxmax]
-    gray = cv2.cvtColor(cro, cv2.COLOR_BGR2GRAY)
-    his = cv2.equalizeHist(gray)
-    bg = cv2.cvtColor(his, cv2.COLOR_GRAY2BGR)
+    gray = cv2.cvtColor(cro, cv2.COLOR_BGR2HSV)
+    gray[...,2] = cv2.equalizeHist(gray[...,2])
+    bg = cv2.cvtColor(gray, cv2.COLOR_HSV2BGR)
     im1 = cv2.inRange(bg, low,upp)
     #i = im1 * 0.12
     i = im1 * porce

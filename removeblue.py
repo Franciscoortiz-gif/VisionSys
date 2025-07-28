@@ -30,6 +30,7 @@ def detectTapes(image):
 
         img = image.copy()
         frame = image.copy()
+        frame2 = image.copy()
         closing = image.copy()
         frame_out = image.copy()
         i = 0
@@ -41,29 +42,27 @@ def detectTapes(image):
                 for i in np.arange(0, 256)]).astype("uint8")
         # apply gamma correction using the lookup table
         gammacor = cv2.LUT(img, table)"""
-        inv = -image
-        YUVw = cv2.cvtColor(inv, cv2.COLOR_BGR2HSV)
-        Yc = cv2.split(YUVw)
-        cv2.equalizeHist(Yc[0], Yc[0])
-        hisY = cv2.merge(Yc, YUVw)
-        his = cv2.cvtColor(hisY, cv2.COLOR_HSV2BGR)
-        his = cv2.cvtColor(his, cv2.COLOR_BGR2GRAY) 
+        his = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY) 
         blur = cv2.blur(his, (19,19))
-        _, th = cv2.threshold(blur,60, 255, cv2.THRESH_TOZERO + cv2.THRESH_BINARY_INV)
+        _, th = cv2.threshold(blur,60, 255, cv2.THRESH_OTSU | cv2.THRESH_BINARY_INV)
         blu2 = cv2.blur(th, (3,3))
         kernel = np.ones((25, 25), np.uint8) 
         closing = cv2.morphologyEx(blu2, cv2.MORPH_OPEN, kernel)
-        cont2, _ = cv2.findContours(closing, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_TC89_KCOS)       
+        cont2, _ = cv2.findContours(closing, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_TC89_KCOS)
+        draw = cv2.drawContours(frame2, cont2, -1, (255,0,0),2)       
         min_contour_area = 6000  # Define your minimum area threshold
         large_contours = [cnt for cnt in cont2 if cv2.contourArea(cnt) > min_contour_area and cv2.contourArea(cnt) < 13000 ]
         for cnt in large_contours:
-                x, y, w, h = cv2.boundingRect(cnt)
-                frame_out = cv2.rectangle(frame, (x, y), (x+w, y+h), (0, 0, 200), 3)
+                #x, y, w, h = cv2.boundingRect(cnt)
+                (x,y) ,radius= cv2.minEnclosingCircle(cnt)
+                center = (int(x), int(y))
+                radius = int(radius)
+                frame_out = cv2.circle(frame, center, radius,(120,58,82), 2)
                 i = len(large_contours)
         
         frame_out = cv2.putText(frame_out, "Botellas encontradas "+str(i), (50,50), cv2.FONT_HERSHEY_SIMPLEX, 1.5, (0,255,0),2)
         
-        return frame_out, closing
+        return frame_out, closing, blur, th,blu2,draw
 
 
     

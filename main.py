@@ -83,7 +83,24 @@ def hueerosi():
 def huecont():
     global ap
     ap = 7
+    
+def p3blur():
+    global ap
+    ap = 8
 
+def p3th():
+    global ap
+    ap = 9
+def p3mo():
+    global ap
+    ap = 10
+def p3blur2():
+    global ap
+    ap = 11
+def p3con():
+    global ap
+    ap = 12
+    
 def save():
     global doslid,per,bl1,thhue,norhue,kerhue,rXmin,rXmax,rYmin,rYmax,iters,armax,armin
     conf = configparser.ConfigParser()
@@ -180,9 +197,9 @@ def show():
                 except:aremax = 20000
             huecos, th,norm,eros,const = removeblue.remove_blue(i,thval,normva,iterss,
                                                                 kern,aremin,aremax)
-            tapas, mask = removeblue.detectTapes(i)
+            tapas, mask, p3blu1, p3th1,p3blu2,p3con = removeblue.detectTapes(i)
             nostruc = distances.isdestructured(mask, i)
-            images = [i,huecos,tapas,nostruc,th,norm,eros,const]
+            images = [i,huecos,tapas,nostruc,th,norm,eros,const,p3blu1,p3th1,mask,p3blu2,p3con]
             im = Image.fromarray(images[ap])
             img = ImageTk.PhotoImage(image=im)
             vid.configure(image=img)
@@ -294,6 +311,18 @@ armin = Entry(hueco)
 armin.grid(column=1,row=9)
 
 ##Pantalla3
+btnblurr = Button(tapa, text="blur 1", command=p3blur)
+btnblurr.grid(column=0, row=0)
+btnthre = Button(tapa, text="Thresold", command=p3th)
+btnthre.grid(column=1, row=0)
+btnmask1 = Button(tapa, text="Morphology", command=p3mo)
+btnmask1.grid(column=2, row=0)
+btnblu2 = Button(tapa, text="blur 2", command=p3blur2)
+btnblu2.grid(column=3, row=0)
+btncontp3 = Button(tapa, text="Contornos", command=p3con)
+btncontp3.grid(column=4, row=0)
+btnTaps1 = Button(tapa, text="Botellas", command=tapas)
+btnTaps1.grid(column=5, row=0)
 
 root.rowconfigure(0,weight=1)
 root.rowconfigure(2,weight=1)
