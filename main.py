@@ -10,9 +10,9 @@ import sys
 from tkinter import *
 from PIL import ImageTk, Image
 
-
 def start():
-    global cap
+    global cap, onceopr
+    onceopr = False
     cap = cv2.VideoCapture(0)
     show()
     
@@ -47,12 +47,16 @@ def adjus():
 def hue():
     global ap,bril,hueco,estruct,tapa
     ap = 1
-    hueco.grid(column=2, row=1,columnspan=5, rowspan=6)
+    hueco.grid(column=2, row=1,columnspan=5, rowspan=12)
     bril.grid_forget()
     estruct.grid_forget()
     tapa.grid_forget()
 
-def tapas():
+def captu():
+    global adj, capture
+    capture = adj.copy()
+
+def tapass():
     global ap
     ap = 2
     tapa.grid(column=2, row=1,columnspan=3, rowspan=6)
@@ -97,9 +101,10 @@ def p3mo():
 def p3blur2():
     global ap
     ap = 11
-def p3con():
+def p3conn():
     global ap
     ap = 12
+
     
 def save():
     global doslid,per,bl1,thhue,norhue,kerhue,rXmin,rXmax,rYmin,rYmax,iters,armax,armin
@@ -140,33 +145,31 @@ def save():
     
 def show():
     global cap, limdown, doslid, per, images, bl1, rYmax,rYmin,rXmax, rXmin, ap,thhue,norhue, iters,kerhue
-    global armin,armax
+    global armin,armax, norhue2, adj, capture, huecos, tapas,nostruc,th,norm,eros,const,p3blu1,p3th1,mask,p3blu2,p3con
+    global onceopr
     if cap is not None:
         ret, frame = cap.read()
         if ret == True:
-            frame = cv2.resize(frame, (960,540))
-            adj = au.autoadjustbrigandconst(frame)
-            ##Control de brillos
+            frame = cv2.resize(frame, (500,300))
             limdown = int(doslid.get())  
-            porcent = float(per.get())
-            porcentreal = 0.0
+            porcent = int(per.get())
             rymn = 0 
             rymx = 0
-            if porcent > 0:porcentreal = porcent / 100.0  
             porblu = int(bl1.get())
             if rYmin and rYmax:
                 try:
                     r1 = int(rYmin.get())
                     r2 = int(rYmax.get())
                     if r2 > r1:
-                        rymn = int(rYmin.get())
-                        rymx = int(rYmax.get())
+                        #Valores de la exposicion de la erosion de autorecorte
+                        experomin = int(rYmin.get())
+                        experomax = int(rYmax.get())
                     else:
-                        rymn = 0
-                        rymx = 540
+                        experomin = 35
+                        experomax = 165
                 except:
-                    rymn = 0
-                    rymx = 540
+                    experomin = 35
+                    experomax = 165
             if rXmin and rXmax:
                 try:
                     r3 = int(rXmin.get())
@@ -176,11 +179,13 @@ def show():
                         rxmx = int(rXmax.get())
                     else:
                         rxmn = 0
-                        rxmx = 960
+                        rxmx = 500
                 except:
                     rxmn = 0
-                    rxmx = 960
-            i = distances.distancemask(adj, limdown, porcentreal, porblu, rymn, rymx,rxmn, rxmx)
+                    rxmx = 500
+            ##Control de brillos
+            adj,th22 = au.autoadjustbrigandconst(frame,experomin,experomax)
+            
             #Deteccion de Huecos en el paquete
             thval = int(thhue.get())
             normva = int(norhue.get())
@@ -195,16 +200,31 @@ def show():
             if armax:
                 try:aremax = int(aremax.get())
                 except:aremax = 20000
-            huecos, th,norm,eros,const = removeblue.remove_blue(i,thval,normva,iterss,
-                                                                kern,aremin,aremax)
-            tapas, mask, p3blu1, p3th1,p3blu2,p3con = removeblue.detectTapes(i)
-            nostruc = distances.isdestructured(mask, i)
-            images = [i,huecos,tapas,nostruc,th,norm,eros,const,p3blu1,p3th1,mask,p3blu2,p3con]
+            if onceopr == False:
+                huecos, th,norm,eros,const = removeblue.remove_blue(adj,thval,normva,iterss,
+                                                                kern,aremin,aremax,int(norhue2.get()))
+                tapas, mask, p3blu1, p3th1,p3blu2,p3con = removeblue.detectTapes(adj)
+                nostruc = distances.isdestructured(mask, adj)
+                capture = adj.copy()
+                onceopr = True
+            
+            if capture is not None:
+                huecos, th,norm,eros,const = removeblue.remove_blue(capture,thval,normva,iterss,
+                                                                kern,aremin,aremax,int(norhue2.get()))
+                tapas, mask, p3blu1, p3th1,p3blu2,p3con = removeblue.detectTapes(capture)
+                nostruc = distances.isdestructured(mask, capture)
+            images = [adj,huecos,tapas,nostruc,th,norm,eros,const,p3blu1,p3th1,mask,p3blu2,p3con]
+                
             im = Image.fromarray(images[ap])
             img = ImageTk.PhotoImage(image=im)
             vid.configure(image=img)
             vid.image = img
-            vid.after(10, show)
+            im2 = Image.fromarray(th22)
+            img2 = ImageTk.PhotoImage(image=im2)
+            vid2.configure(image=img2)
+            vid2.image = img2
+            vid.after(100, show)
+            
         else:vid.image = "",cap.release() 
  
 
@@ -216,7 +236,9 @@ def end():
     
 cap = None
 limdown = 174
+capture = None
 images = []
+onceopr = False
 ap = 0
 root = Tk()
 root.title("Inicio Configuracion de Sistema Vision")
@@ -225,6 +247,7 @@ per = DoubleVar()
 bl1 = DoubleVar()
 thhue = DoubleVar()
 norhue = DoubleVar()
+norhue2 = DoubleVar()
 kerhue = DoubleVar()
 
 btnIniciar = Button(root, text="Iniciar", width=45, command=start)
@@ -240,15 +263,19 @@ btnBrig = Button(root, text="Ajustar brillo", width=45, command=adjus)
 btnBrig.grid(column=0, row=8, padx=5, pady=5)
 btnHuec = Button(root, text="huecos", width=45, command=hue)
 btnHuec.grid(column=1, row=8, padx=5, pady=5)
-btnTaps = Button(root, text="Cantidad botellas", width=45, command=tapas)
+btnTaps = Button(root, text="Cantidad botellas", width=45, command=tapass)
 btnTaps.grid(column=2, row=8, padx=5, pady=5)
 btnStruct = Button(root, text="Estructura", width=45, command=struc)
 btnStruct.grid(column=3, row=8, padx=5, pady=5)
 btnSave = Button(root, text="Guardar", width=20,command=save)
 btnSave.grid(column=3, row=0)
+btncap = Button(root, text="Capturar", width=20,command=captu)
+btncap.grid(column=4, row=0)
 
 vid = Label(root)
-vid.grid(column=0, row=1, columnspan=2, rowspan=7)
+vid.grid(column=0, row=1, columnspan=3, rowspan=3)
+vid2 = Label(root)
+vid2.grid(column=0, row=4, columnspan=3, rowspan=3)
 ##Pantalla 1
 adjdowlim = Scale(bril, from_=0, to=255,orient=HORIZONTAL,label="Ajustar Eliminacion de Brillos",
             length=200, resolution=1,variable=doslid)
@@ -260,8 +287,8 @@ difu = Scale(bril, from_=2, to=50,orient=HORIZONTAL,label="Blur",
                 length=200, resolution=1,variable=bl1)
 difu.grid(column=0, row=3, padx=5,pady=5)
 
-mnrxlbl = Label(bril, text="Recorte minimo en X")
-mxrxlbl = Label(bril, text="Recorte maximo en X")
+mnrxlbl = Label(bril, text="Minimo erosion de autorecorte")
+mxrxlbl = Label(bril, text="Maximo erosion de autorecorte")
 rXmin = Entry(bril)
 rXmax = Entry(bril)
 mnrxlbl.grid(column=0,row=4)
@@ -294,21 +321,24 @@ thre.grid(column=0, row=1,columnspan=3)
 norre = Scale(hueco,from_=0, to=255,orient=HORIZONTAL,label="Ajustar Normalize MinMax",
             length=250, resolution=1,variable=norhue )
 norre.grid(column=0, row=2,columnspan=3)
+norre2 = Scale(hueco,from_=0, to=255,orient=HORIZONTAL,label="Ajustar Normalize MinMax",
+            length=250, resolution=1,variable=norhue2 )
+norre2.grid(column=0, row=3,columnspan=3)
 kere = Scale(hueco,from_=1, to=255,orient=HORIZONTAL,label="Ajustar Kernel Erosion",
             length=250, resolution=1,variable=kerhue )
-kere.grid(column=0, row=3,columnspan=3)
+kere.grid(column=0, row=4,columnspan=3)
 lblite = Label(hueco,text="Iteraciones erosion")
-lblite.grid(column=1,row=4)
+lblite.grid(column=1,row=5)
 iters = Entry(hueco)
-iters.grid(column=1,row=5)
+iters.grid(column=1,row=6)
 lblarmax = Label(hueco,text="Area maxima huecos")
-lblarmax.grid(column=1,row=6)
+lblarmax.grid(column=1,row=7)
 armax = Entry(hueco)
-armax.grid(column=1,row=7)
+armax.grid(column=1,row=8)
 lblarmin = Label(hueco,text="Iteraciones erosion")
-lblarmin.grid(column=1,row=8)
+lblarmin.grid(column=1,row=9)
 armin = Entry(hueco)
-armin.grid(column=1,row=9)
+armin.grid(column=1,row=10)
 
 ##Pantalla3
 btnblurr = Button(tapa, text="blur 1", command=p3blur)
@@ -319,9 +349,9 @@ btnmask1 = Button(tapa, text="Morphology", command=p3mo)
 btnmask1.grid(column=2, row=0)
 btnblu2 = Button(tapa, text="blur 2", command=p3blur2)
 btnblu2.grid(column=3, row=0)
-btncontp3 = Button(tapa, text="Contornos", command=p3con)
+btncontp3 = Button(tapa, text="Contornos", command=p3conn)
 btncontp3.grid(column=4, row=0)
-btnTaps1 = Button(tapa, text="Botellas", command=tapas)
+btnTaps1 = Button(tapa, text="Botellas", command=tapass)
 btnTaps1.grid(column=5, row=0)
 
 root.rowconfigure(0,weight=1)

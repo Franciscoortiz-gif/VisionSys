@@ -1,25 +1,9 @@
 import cv2
 import numpy as np 
+import matplotlib.pyplot as plt
 #[5:13 p.m., 15/7/2025] Jose Ruelas: El paquete mide 12" X 12 "
 #[5:13 p.m., 15/7/2025] Jose Ruelas: 305 X 305mm
-def distancemask(image, limi, porce, porbl,rymin, rymax, rxmin, rxmax):
-    img = image.copy()
-    low = np.array([limi,limi,limi])
-    upp = np.array([255,255,255])
-    
-    cro= img[rymin:rymax, rxmin:rxmax]
-    gray = cv2.cvtColor(cro, cv2.COLOR_BGR2HSV)
-    gray[...,2] = cv2.equalizeHist(gray[...,2])
-    bg = cv2.cvtColor(gray, cv2.COLOR_HSV2BGR)
-    im1 = cv2.inRange(bg, low,upp)
-    #i = im1 * 0.12
-    i = im1 * porce
-    i = np.clip(i, 0, 255).astype(np.uint8)
-    i = cv2.blur(i, (porbl,porbl))
-    icolor = cv2.cvtColor(i, cv2.COLOR_GRAY2BGR)
-    imf = cv2.subtract(cro, icolor)
-                  
-    return imf
+
 
 def isdestructured(mask, image):
     img = image.copy()
